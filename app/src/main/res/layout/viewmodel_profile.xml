@@ -162,5 +162,27 @@
             app:layout_constraintStart_toStartOf="@+id/like_button"
             app:layout_constraintTop_toBottomOf="@+id/like_button"
             tools:progressBackgroundTint="@android:color/darker_gray"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
+            error="@{viewmodel.emailState.toString()}"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/progressBar">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top"
+                android:inputType="textEmailAddress"
+                android:maxLength="100"
+                android:maxLines="1"
+                android:hint="email@address"
+                android:text="@={viewmodel.email}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

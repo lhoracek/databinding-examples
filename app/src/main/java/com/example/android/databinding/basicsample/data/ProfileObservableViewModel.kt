@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 class ProfileLiveDataViewModel : ViewModel() {
     private val _name = MutableLiveData("Ada")
     private val _lastName = MutableLiveData("Lovelace")
-    private val _likes =  MutableLiveData(0)
+    private val _likes = MutableLiveData(0)
 
     val name: LiveData<String> = _name
     val lastName: LiveData<String> = _lastName
@@ -48,11 +48,27 @@ class ProfileLiveDataViewModel : ViewModel() {
     fun onLike() {
         viewModelScope.launch {
             _likes.value = (_likes.value ?: 0) + 1
-            withContext(Dispatchers.IO){
-                delay(1000)
-            }
-            _likes.value = (_likes.value ?: 0) + 1
         }
+    }
+
+    val email = MutableLiveData("")
+    val emailState = MediatorLiveData<EmailState>().apply {
+        addSource(email) {
+            viewModelScope.launch {
+                when {
+                    it.isEmpty() -> value = EmailState.VOID
+                    it.length < 3 && it.contains("@").not() -> value = EmailState.INVALID
+                    else -> {
+                        value = EmailState.CHECKING
+                        withContext(Dispatchers.IO) {
+                            delay(2000)
+                        }
+                        value = EmailState.OK
+                    }
+                }
+            }
+        }
+        value = EmailState.VOID
     }
 }
 
@@ -61,3 +77,5 @@ enum class Popularity {
     POPULAR,
     STAR
 }
+
+enum class EmailState { VOID, INVALID, CHECKING, TAKEN, OK }

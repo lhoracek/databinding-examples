@@ -16,6 +16,8 @@
 
 package com.example.android.databinding.basicsample.data
 
+import android.text.TextUtils
+import android.util.Patterns
 import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -51,13 +53,22 @@ class ProfileLiveDataViewModel : ViewModel() {
         }
     }
 
+
+    private fun isValidEmail(target: String): Boolean {
+        return if (TextUtils.isEmpty(target)) {
+            false
+        } else {
+            Patterns.EMAIL_ADDRESS.matcher(target).matches()
+        }
+    }
+
     val email = MutableLiveData("")
     val emailState = MediatorLiveData<EmailState>().apply {
         addSource(email) {
             viewModelScope.launch {
                 when {
                     it.isEmpty() -> value = EmailState.VOID
-                    it.length < 3 && it.contains("@").not() -> value = EmailState.INVALID
+                    isValidEmail(it).not() -> value = EmailState.INVALID
                     else -> {
                         value = EmailState.CHECKING
                         withContext(Dispatchers.IO) {
